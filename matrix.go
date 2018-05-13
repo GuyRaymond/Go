@@ -44,8 +44,7 @@ func sort(xs []float64) (ys []float64, zs []int) {
 	ys = make([]float64, n)
 	zs = make([]int, n)
 	for i, u := range us {
-		ys[i] = u.x
-		zs[i] = u.i
+		ys[i],zs[i] = u.x,u.i
 	}
 	return
 }
