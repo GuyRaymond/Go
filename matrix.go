@@ -22,17 +22,36 @@ func  foldl(f func(float64, foat64) float64, xs []float64, u float64) (ans float
 	return
 }
 
-func zip(f func(float64, foat64) float64, xs,ys []float64) (zs float64[]) {
+func zip(f func(float64, foat64) float64, xs,ys []float64) (zs []float64) {
 	if 0 == len(xs) || 0 == len(ys) {panic("Empty slice")}
 	var nx,ny int = len(xs),len(ys)
 	var n int = nx
 	if ny < n {n = ny}	
-	zs = make([]float64,len(n)
+	zs = make([]float64,n)
 	for i, x := range xs {
 		zs[i] = f(x,ys[i])
 	}
 	return
 }
+func zipMatrix(f func([]float64, []foat64) []float64, xs,ys [][]float64) (zs [][]float64) {
+	if 0 == len(xs) || 0 == len(ys) {panic("Empty slice")}
+	var nx,ny int = len(xs),len(ys)
+	var n int = nx
+	if ny < n {n = ny}	
+	zs = make([][]float64,n)
+	for i := o; i< n; i++ {
+		zs[i] = zip(f,xs[i],ys[i])
+	}
+	return
+}
+func  foldlMatrix(f func([]float64, []foat64) []float64,, xs [][]float64, u []float64) (ans []float64) {
+	ans = u
+	for _, x := range xs {
+		ans = f(ans,x)
+	}
+	return
+}
+
 func Product(xs []float64) float64 {
 	return foldl(func(x,y float64) float64 {return x*y},xs,1)
 }
@@ -45,14 +64,25 @@ func Dot(xs,ys []float64) (ans float64) {
 	if len(xs) != len(ys) {panic("Vectors must have the same length")}
 	return sum(zip(func(x,y float64) float64 {return x*y},xs,ys))
 }
-func Plus(xs,ys []float64) (ans float64) {
+func Plus(xs,ys []float64) []float64 {
 	if len(xs) != len(ys) {panic("Vectors must have the same length")}
 	return zip(func(x,y float64) float64 {return x+y},xs,ys)
 }
-func Minus(xs,ys []float64) (ans float64) {
+func Minus(xs,ys []float64) []float64 {
 	if len(xs) != len(ys) {panic("Vectors must have the same length")}
 	return zip(func(x,y float64) float64 {return x-y},xs,ys)
 }
+
+func PlusMatrix(xs,ys [][]float64) (zs [][]float64) {
+	if len(xs) != len(ys) {panic("Vectors must have the same number of rows")}
+	return zipMatrix(Plus,xs,ys)
+}
+
+func MinusMatrix(xs,ys [][]float64) (zs [][]float64) {
+	if len(xs) != len(ys) {panic("Vectors must have the same number of rows")}
+	return zipMatrix(Minus,xs,ys)
+}
+
 func Min(xs ...float64) (y float64, j int) {
 	if 0 == len(xs) {panic("Empty slice")}
 	y,j = xs[0],0
