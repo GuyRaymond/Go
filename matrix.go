@@ -79,17 +79,4 @@ func Sort(xs []float64) (ys []float64, zs []int) {
 	}
 	return
 }
-func sort(xs []float64) (ys []float64, zs []int) {
-	var us slicePair = make(slicePair, len(xs))
-	var n int = len(xs)
-	for i, x := range xs {
-		us[i] = pair{x: x, i: i}
-	}
-	gosort.Sort(us)
-	ys = make([]float64, n)
-	zs = make([]int, n)
-	for i, u := range us {
-		ys[i],zs[i] = u.x,u.i
-	}
-	return
-}
+
