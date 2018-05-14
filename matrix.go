@@ -43,9 +43,17 @@ func Sum(xs []float64) float64 {
 		  
 func Dot(xs,ys []float64) (ans float64) {
 	if len(xs) != len(ys) {panic("Vectors must have the same length")}
-	return sum(zip(func(x,y float64) float64 {return x*y},xs,ys)
+	return sum(zip(func(x,y float64) float64 {return x*y},xs,ys))
 }
-func Min(xs []float64) (y float64, j int) {
+func Plus(xs,ys []float64) (ans float64) {
+	if len(xs) != len(ys) {panic("Vectors must have the same length")}
+	return zip(func(x,y float64) float64 {return x+y},xs,ys)
+}
+func Minus(xs,ys []float64) (ans float64) {
+	if len(xs) != len(ys) {panic("Vectors must have the same length")}
+	return zip(func(x,y float64) float64 {return x-y},xs,ys)
+}
+func Min(xs ...float64) (y float64, j int) {
 	if 0 == len(xs) {panic("Empty slice")}
 	y,j = xs[0],0
 	for i, x := range xs {
@@ -55,7 +63,7 @@ func Min(xs []float64) (y float64, j int) {
 	}
 	return
 }
-func Max(xs []float64) (y float64, j int) {
+func Max(xs ...float64) (y float64, j int) {
 	if 0 == len(xs) {panic("Empty slice")}
 	y,j = xs[0],0
 	for i, x := range xs {
@@ -78,5 +86,8 @@ func Sort(xs []float64) (ys []float64, zs []int) {
 		ys[i],zs[i] = u.x,u.i
 	}
 	return
+}
+		   
+func Mult(xss,yss [][]float64) (zss [][]float64) {
 }
 
