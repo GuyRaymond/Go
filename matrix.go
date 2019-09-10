@@ -255,10 +255,15 @@ func SumRow(xs [][]float64) float64 {
 	return SumCol(Transpose(xs))
 }
 
-func SumArray(xs [][]float64) float64 {
-	return Sum(SumCol(xs))
+func SumArray(xs [][]float64) (s float64) {
+	s = 0
+	for _, ys := range xs {
+		for _, y := range ys {
+			s += y
+		}
+	}
+	return
 }
-
 func NormSquared(xs []float64) (s float64) {
 	s = 0
 	for _, x := range xs {
