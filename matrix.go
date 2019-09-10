@@ -76,17 +76,30 @@ func ColMatrix(xs [][]float64, j float64) (ys [][]float64) {
 	}
 }
 
+func Row(xs [][]float64, j float64) (ys []float64) {
+	var _,n int = Size(xs)
+	ys = make([]float64,n)
+	for j := 0; j < n; j++ { ys[i] = xs[i][j] }
+}
+
+func rowMatrix(xs [][]float64, j float64) (ys [][]float64) {
+	var m,n int = Size(xs)
+	ys = make([][]float64,n)
+	for j := 0; j < m; j++ { 
+		ys[j] = make([]float64,1)
+		ys[j][0] = xs[i][j] 
+	}
+}
+
 func Transpose(xs [][]float64) (ys [][]float64) {
 	rows, cols = Size(xs)
 	ys = make([][]float64, rows)
-	if 0 == rows {
-		cols = 0
-	} else {
+	if 0 < rows {
 		cols = len(xs[0])
 		var c int
-		for i := 1; i < rows; i++ {
+		for i := 0; i < rows; i++ {
 			ys[i] = make([][]float64, cols)
-			for j := 1; j < cols; j++ {
+			for j := 0; j < cols; j++ {
 				ys[i][j] = xs[j][i]
 			}
 		}
@@ -111,13 +124,38 @@ func MapArray(f func([]float64) []float64, xs [][]float64) (ys [][]float64) {
 	}
 	return
 }
+
+func Apply(f func(float64) float64, xs [][]float64) (ys [][]float64) {
+	var n int = len(xs)
+	ys = make([][]float64, n)
+	for i, _ := range xs {
+		ys[i] = Map(f,xs[i])
+	}
+	return
+}
+
 func Filter(f func(float64) bool, xs []float64) (ys []float64) {
 	var n int = len(xs)
 	ys = make([]float64, n)
 	var j int
 	for i, x := range xs {
-		if f(x[i]) {
-			ys[j] = xs[i]
+		if f(x) {
+			ys[j] = x
+			j++
+		}
+	}
+	ys = ys[0:j]
+	return
+}
+
+func FilterArray(f func([]float64) bool, xs [][]float64) (ys [][]float64) {
+	var n int = len(xs)
+	ys = make([]float64, n)
+	var j int
+	for i, x := range xs {
+		if f(x) {
+			ys[j] = make([]float64, len(x))
+			copy(ys[j],x)
 			j++
 		}
 	}
@@ -173,44 +211,11 @@ func zipMatrix(f func([]float64, []foat64) []float64, xs, ys [][]float64) (zs []
 	return
 }
 
-func Product(xs []float64) float64 {
-	return foldl(func(x, y float64) float64 { return x * y }, xs, 1)
-}
-
-func Sum(xs []float64) float64 {
-	return foldl(func(x, y float64) float64 { return x + y }, xs, 0)
-}
-
-func Norm(xs []float64) float64 {
-	return math.Sqrt(Dot(xs,xs))
-}
-
-func Minus(x float, ys []float64) []float64 {
-	if len(xs) != len(ys) {
-		panic("Vectors must have the same length")
-	}
-	return zip(func(x, y float64) float64 { return x - y }, xs, ys)
-}
-
-func Dot(xs, ys []float64) (ans float64) {
-	if len(xs) != len(ys) {
-		panic("Vectors must have the same length")
-	}
-	return sum(zip(func(x, y float64) float64 { return x * y }, xs, ys))
-}
-
 func Plus(xs, ys []float64) []float64 {
 	if len(xs) != len(ys) {
 		panic("Vectors must have the same length")
 	}
 	return zip(func(x, y float64) float64 { return x + y }, xs, ys)
-}
-
-func Minus(xs, ys []float64) []float64 {
-	if len(xs) != len(ys) {
-		panic("Vectors must have the same length")
-	}
-	return zip(func(x, y float64) float64 { return x - y }, xs, ys)
 }
 
 func PlusMatrix(xs, ys [][]float64) (zs [][]float64) {
@@ -220,11 +225,66 @@ func PlusMatrix(xs, ys [][]float64) (zs [][]float64) {
 	return zipMatrix(Plus, xs, ys)
 }
 
+func Minus(xs, ys []float64) []float64 {
+	if len(xs) != len(ys) {
+		panic("Vectors must have the same length")
+	}
+	return zip(func(x, y float64) float64 { return x - y }, xs, ys)
+}
+
 func MinusMatrix(xs, ys [][]float64) (zs [][]float64) {
 	if len(xs) != len(ys) {
 		panic("Vectors must have the same number of rows")
 	}
 	return zipMatrix(Minus, xs, ys)
+}
+
+func Product(xs []float64) float64 {
+	return foldl(func(x, y float64) float64 { return x * y }, xs, 1)
+}
+
+func Sum(xs []float64) float64 {
+	return foldl(func(x, y float64) float64 { return x + y }, xs, 0)
+}
+
+func SumCol(xs [][]float64) float64 {
+	return foldl(Plus, xs, 0)
+}
+
+func SumRow(xs [][]float64) float64 {
+	return SumCol(Transpose(xs))
+}
+
+func SumArray(xs [][]float64) float64 {
+	return Sum(SumCol(xs))
+}
+
+func NormSquared(xs []float64) (s float64) {
+	s = 0
+	for _, x := range xs {
+		s += x*x
+	}
+	return
+}
+
+func Norm(xs []float64) {
+	return math.Sqrt(NormSquared(xs))
+}
+
+func NormArray(xs [][]float64) (s float64) {
+	s = 0
+	for _, x := range xs {
+		s += NormSquared(x)
+	}
+	s = math.Sqrt(s)
+	return
+}
+
+func Minus(xs, ys []float64) []float64 {
+	if len(xs) != len(ys) {
+		panic("Vectors must have the same length")
+	}
+	return zip(func(x, y float64) float64 { return x - y }, xs, ys)
 }
 
 func Min(xs ...float64) (y float64, j int) {
@@ -269,49 +329,53 @@ func Sort(xs []float64) (ys []float64, zs []int) {
 
 func Mult(xs, ys [][]float64) (zs [][]float64) {
 	mx, nx := Size(xs)
-	my, ny := Size(xs)
+	my, ny := Size(ys)
 	if nx != my {
 		panic("number of columns of the left matrix must equal to the number of rows of the right matrix")
 	}
 	zs = make([][]float64, mx)
-	for i := 0; i < mx; i++ {
-		zs[i] = make([]float64, ny)
-		for j := 0; j < mx; j++ {
-			zs[i][j] = Dot(xs[i], ys[:][j])
-		}
+	for i,x := range xs {
+		zs[i] = Sumcol(Apply(func(u float64) float64 { return x * u}, ys)
 	}
 	return
 }
+
+func DotArray(xs, ys [][]float64) ([][]float64) {
+	return Mult(Transpose(xs),ys)
+}
+
+
 func householderqr(A [][]float64) (Q,R [][]float64)  {
 // QR de decomposition with the method of Householder reflections
-	m,n := size(A);
-	Q = Eye(m,m);
+	m,n := size(A)
+	Q = Eye(m,m)
 	R = make([][]float64,m)
 	for i := 0; i < m; i++ {
-		Q[i] = make([][]float64,n)
-		copy(Q[i],A[i])
+		R[i] = make([]float64,n)
+		copy(R[i],A[i])
 	}
 	var a,rho,nu float64
 	var u []float64
 	var us [][1]float64
 	for k := 0; k < n; k++ {
-		u = R[k:m][k];
+		u = R[k:m][k]
 		us = make([][1]float64,m-k+1)
-		rho := -1.0;
-		if u[1] < 0 {rho = 1}
+		rho = -1.0
+		if u[0] < 0 {rho = 1}
 		nu = Norm(u)
 		a = rho*Norm(u)
-		u[1] = u[1] - a
-		u = Map(func(x float64) float64 { return x/nu },u);
-		v := Mult(Map(func(x float64) float64 { return 2*x },u),transpose(u));
-    R(k:m,k:n) = R(k:m,k:n) - v*R(k:m,k:n);
-    if 1 == k
-        Q(k:m,k:m) = Q(k:m,k:m) - v*Q(k:m,k:m);
-    else
-        p = k-1;
-        Q(k:m,1:p) = Q(k:m,1:p) - v*Q(k:m,1:p);
-        Q(k:m,k:m) = Q(k:m,k:m) - v*Q(k:m,k:m);
-    end
-end
-Q = transpose(Q);
+		u[0] = u[0] - a
+		u = Map(func(x float64) float64 { return x/nu },u)
+		v := Mult(Map(func(x float64) float64 { return 2*x },u),transpose(u))
+		R(k:m,k:n) = R(k:m,k:n) - v*R(k:m,k:n)
+		if  1 == k  {
+			Q(k:m,k:m) = Q(k:m,k:m) - v*Q(k:m,k:m)
+		} else  {
+			p = k-1
+			Q(k:m,1:p) = Q(k:m,1:p) - v*Q(k:m,1:p)
+			Q(k:m,k:m) = Q(k:m,k:m) - v*Q(k:m,k:m)
+		}
+	}
+	Q = transpose(Q)
+	return
 }
