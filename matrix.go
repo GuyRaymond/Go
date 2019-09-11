@@ -39,7 +39,7 @@ func Ones(int m,n) (xs [][]float64) {
 	xs = make([][]float64,m)
 	for i := 0; i < m; i++ {
 		xs[i] = make([]float64,n)
-		for j := 0; i < n; j++ { xs[i][j] = x }	
+		for j := 0; i < n; j++ { xs[i][j] = 1 }	
 	}
 	return
 }
