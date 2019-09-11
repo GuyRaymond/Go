@@ -122,8 +122,8 @@ func MapArray(f func([]float64) []float64, xs [][]float64) (ys [][]float64) {
 func Apply(f func(float64) float64, xs [][]float64) (ys [][]float64) {
 	var n int = len(xs)
 	ys = make([][]float64, n)
-	for i, _ := range xs {
-		ys[i] = Map(f,xs[i])
+	for i, x := range xs {
+		ys[i] = Map(f,x)
 	}
 	return
 }
@@ -174,8 +174,8 @@ func foldlMatrix(f func([]float64, []foat64) []float64, xs [][]float64, u []floa
 }
 
 func zip(f func(float64, foat64) float64, xs, ys []float64) (zs []float64) {
-	if 0 == len(xs) || 0 == len(ys) {
-		panic("Empty slice")
+	if 0 == len(xs) && 0 == len(ys) {
+		panic("Empty slices")
 	}
 	var nx, ny int = len(xs), len(ys)
 	var n int = nx
@@ -190,7 +190,7 @@ func zip(f func(float64, foat64) float64, xs, ys []float64) (zs []float64) {
 }
 
 func zipMatrix(f func([]float64, []foat64) []float64, xs, ys [][]float64) (zs [][]float64) {
-	if 0 == len(xs) || 0 == len(ys) {
+	if 0 == len(xs) && 0 == len(ys) {
 		panic("Empty slice")
 	}
 	var nx, ny int = len(xs), len(ys)
