@@ -89,15 +89,13 @@ func rowMatrix(xs [][]float64, j float64) (ys [][]float64) {
 
 func Transpose(xs [][]float64) (ys [][]float64) {
 	rows, cols = Size(xs)
-	ys = make([][]float64, rows)
-	if 0 < rows {
-		cols = len(xs[0])
-		var c int
-		for i := 0; i < rows; i++ {
-			ys[i] = make([][]float64, cols)
-			for j := 0; j < cols; j++ {
-				ys[i][j] = xs[j][i]
-			}
+	ys = make([][]float64, cols)
+	for i := 0; i < cols; i++ {
+		ys[i] = make([][]float64, rows)
+	}
+	for i := 0; i < rows; i++ {
+		for j := 0; j < cols; j++ {
+			ys[j][i] = xs[i][j]
 		}
 	}
 	return
