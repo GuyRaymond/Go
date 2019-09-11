@@ -46,15 +46,11 @@ func Ones(int m,n) (xs [][]float64) {
 
 func Size(xs [][]float64) (rows, cols int) {
 	rows = len(xs)
-	if 0 == rows {
-		cols = 0
-	} else {
+	if 0 < rows {
 		cols = len(xs[0])
-		var c int
 		for i := 1; i < rows; i++ {
-			c = len(xs[i])
-			if c < cols {
-				cols = c
+			if len(xs[i]) < cols {
+				cols = len(xs[i])
 			}
 		}
 	}
